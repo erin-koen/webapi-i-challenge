@@ -7,7 +7,7 @@ server.use(express.json());
 
 server.post("/api/users", (req, res) => {
   const { name, bio } = req.body;
- 
+
   !name || !bio
     ? res
         .status(400)
@@ -36,10 +36,30 @@ server.get("/api/users", (req, res) => {
     });
 });
 
+server.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  console.log("This is the id", id);
+  db.findById(id)
+    .then(user => {
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist." });
+      }
+    })
+    .catch(error => {
+      res
+        .status(500)
+        .json({ message: "The user information could not be retrieved" });
+    });
+});
+
 server.put("/api/users/:id", (req, res) => {
   const { id } = req.params;
   const { name, bio } = req.body;
-  console.log(id)
+  console.log(id);
   !name || !bio
     ? res
         .status(400)
@@ -50,34 +70,35 @@ server.put("/api/users/:id", (req, res) => {
           if (updated) {
             res.status(200).json(updated);
           } else {
-            res
-              .status(404)
-              .json({
-                message: "The user with the specified ID does not exist."
-              });
+            res.status(404).json({
+              message: "The user with the specified ID does not exist."
+            });
           }
         })
         .catch(err => {
-          res.status(500).json({ message: "The user information could not be modified" });
+          res
+            .status(500)
+            .json({ message: "The user information could not be modified" });
         });
 });
 
 server.delete("/api/users/:id", (req, res) => {
-    const id = req.params.id;
+  const id = req.params.id;
 
-    db
-    .remove(id)
+  db.remove(id)
     .then(deleted => {
-        if (deleted) {
-            res.status(200).end();
-        } else {
-            res.status(404).json({ message: "The user with the specified ID does not exist" })
-        }
+      if (deleted) {
+        res.status(200).end();
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist" });
+      }
     })
     .catch(err => {
-        res.status(500).json({ error: "The user could not be removed" })
-    })
-})
+      res.status(500).json({ error: "The user could not be removed" });
+    });
+});
 
 server.listen(4000, () => {
   console.log(`\n** API up and running on port 4000`);
