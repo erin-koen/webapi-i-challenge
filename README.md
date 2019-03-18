@@ -36,6 +36,7 @@ Now that we have a way to add, update, remove and retrieve data from the provide
 
 ### User Schema
 
+
 Users in the database conform to the following object structure:
 
 ```js
